@@ -47,8 +47,8 @@ const account1 = {
     '2023-04-01T10:17:24.185Z',
     '2023-05-08T14:11:59.604Z',
     '2023-05-27T17:01:17.194Z',
-    '2023-10-02T23:36:17.929Z',
-    '2023-10-01T10:51:36.790Z',
+    '2023-10-01T23:36:17.929Z',
+    '2023-10-02T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -199,15 +199,38 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time == 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+  //Set time to 5 minutes
+  let time = 600;
+
+  tick();
+
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
 //EventListener
 
-let currentAccount;
+let currentAccount, timer;
 
-// fake login
+// // fake login
 
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 //////////////////////////////////////////
 
@@ -239,6 +262,9 @@ btnLogin.addEventListener('click', function (e) {
 
     //Clear Input User
     inputLoginUsername.value = inputLoginPin.value = '';
+
+    if (timer) clearInterval(timer);
+    timer = startLogOutTimer();
     //Update UI
     updateUI(currentAccount);
   } else {
@@ -273,6 +299,9 @@ btnTransfer.addEventListener('click', function (e) {
 
     //Update UI
     updateUI(currentAccount);
+
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
@@ -293,6 +322,9 @@ btnLoan.addEventListener('click', function (e) {
 
     //Updating UI
     updateUI(currentAccount);
+
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 });
 
